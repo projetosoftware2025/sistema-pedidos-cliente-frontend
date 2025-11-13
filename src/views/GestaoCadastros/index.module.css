@@ -1,0 +1,176 @@
+/* ======== CONTAINER GERAL ======== */
+.container {
+  font-family: "Inter", sans-serif;
+  color: #222;
+  background-color: #f8f8f8;
+  min-height: 100vh;
+  /* padding: 20px; */
+}
+
+.containerBox{
+  padding: 20px;
+}
+
+.tabs {
+  display: flex;
+  justify-content: center;
+  margin: 16px 0;
+  gap: 8px;
+}
+
+.tabButton {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  background: #ddd;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.tabButton.active {
+  background: linear-gradient(135deg, #ff8a00, #ff3d68);
+  color: white;
+}
+
+.content {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 12px;
+}
+
+.addBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #ff8a00, #ff3d68);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th, .table td {
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.editBtn {
+  background: #ff8a00;
+  border: none;
+  padding: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: white;
+}
+
+/* Modal */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: #fff;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 500px;
+  padding: 20px;
+  animation: fadeIn 0.3s ease;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.closeBtn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.modalBody {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.modalBody input, .modalBody textarea, .modalBody select {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.modalBody input:focus,
+.modalBody textarea:focus,
+.modalBody select:focus {
+  border-color: #ff3d68;
+  box-shadow: 0 0 6px rgba(255, 61, 104, 0.4);
+}
+
+.previewImg {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 8px;
+  align-self: center;
+  margin-top: 10px;
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+.saveBtn {
+  background: linear-gradient(135deg, #ff8a00, #ff3d68);
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.saveBtn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}

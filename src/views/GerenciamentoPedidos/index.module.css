@@ -1,0 +1,326 @@
+/* ======== CONTAINER GERAL ======== */
+.container {
+  font-family: "Inter", sans-serif;
+  color: #222;
+  background-color: #f8f8f8;
+  min-height: 100vh;
+  /* padding: 20px; */
+}
+
+.containerBox{
+  padding: 20px;
+}
+
+/* ======== FILTROS ======== */
+.filters {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  width: 60%;
+  margin-bottom: 20px;
+}
+
+.filters form{
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px
+}
+
+.title {
+  text-align: start;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #333;
+}
+
+
+.filters input,
+.filters select {
+  padding: 12px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background: #fdfdfd;
+  transition: all 0.2s ease;
+}
+
+.filters input:focus,
+.filters select:focus {
+  outline: none;
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+}
+
+.buscar {
+  background: #fc7601;
+  color: #fff;
+  border: none;
+  padding: 12px 16px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s ease;
+}
+
+.buscar:hover {
+  background: #fc5001;
+}
+
+/* ======== TABELA ======== */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+}
+
+.table th {
+  background: #fc7601;
+  color: #fff;
+  font-weight: 600;
+  text-align: center;
+  padding: 12px 15px;
+  font-size: 0.95rem;
+}
+
+.table td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #eee;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.table tr:hover {
+  background: #f5faff;
+  transition: background 0.2s ease;
+}
+
+/* ======== STATUS ======== */
+.status {
+  padding: 6px 10px;
+  border-radius: 10px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.andamento {
+  background: #ffeb99;
+  color: #b38b00;
+}
+
+.pronto {
+  background: #c9ffd1;
+  color: #1b8b3d;
+}
+
+.finalizado {
+  background: #bde0fe;
+  color: #00509d;
+}
+
+.cancelado {
+  background: #ffc6c6;
+  color: #b22222;
+}
+
+/* ======== BOTÕES DE AÇÃO ======== */
+.acoes {
+  /* position: relative; */
+  display: flex;
+  justify-content: center;
+}
+
+.infoButton {
+  /* background: #02152d; */
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 40px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.infoButton:hover {
+  background: #357acb;
+}
+
+/* ======== MENU OPÇÕES ======== */
+.menu {
+  position: fixed;
+  top: 350px;
+  right: 20;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  min-width: 180px;
+  /* z-index: 100; */
+}
+
+.menu button {
+  padding: 10px;
+  background: none;
+  width: 100%;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s ease;
+}
+
+.menu button:hover {
+  background: #f0f4ff;
+}
+
+.menu .cancelar {
+  color: #b22222;
+  font-weight: 600;
+}
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.card, .alert {
+  background: #fff;
+  padding: 25px 30px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.3s ease;
+}
+
+.card h2, .alert h3 {
+  margin-bottom: 15px;
+  color: #333;
+  text-align: start;
+}
+
+.card table {
+  width: 100%;
+  /* border-collapse: collapse; */
+  margin: 15px 0;
+}
+
+.card th, .card td {
+  text-align: center;
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.actions {
+  display: flex;
+  justify-content: end;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.actions button {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.actions button:hover {
+  opacity: 0.9;
+}
+
+.actions .enviar {
+  background: #4a90e2;
+  color: #fff;
+}
+
+.actions .recusar {
+  background: #b22222;
+  color: #fff;
+}
+
+.actions .confirmar {
+  background: #1b8b3d;
+  color: #fff;
+}
+
+/* ======== PIX BOX ======== */
+.pixBox {
+  width: 100%;
+  height: 180px;
+  background: #eee;
+  border: 2px dashed #ccc;
+  border-radius: 10px;
+  margin: 10px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #777;
+  font-style: italic;
+}
+
+/* ======== TEXTAREA ======== */
+textarea {
+  width: 100%;
+  min-height: 100px;
+  resize: none;
+  padding: 10px;
+  font-family: inherit;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  margin-top: 10px;
+  transition: border 0.2s ease;
+}
+
+textarea:focus {
+  outline: none;
+  border-color: #4a90e2;
+}
+
+/* ======== ANIMAÇÕES ======== */
+@keyframes fadeIn {
+  from {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* ======== RESPONSIVIDADE ======== */
+@media (max-width: 768px) {
+  .filters {
+    width: 90%;
+  }
+
+  .table th, .table td {
+    font-size: 0.8rem;
+    padding: 10px;
+  }
+
+  .card, .alert {
+    width: 95%;
+  }
+}

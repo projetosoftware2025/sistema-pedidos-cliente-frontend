@@ -1,0 +1,161 @@
+/* Overlay escura com fade-in */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  animation: fadeIn 0.25s ease;
+}
+
+/* Modal principal */
+.modal {
+  background: #fff;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 380px;
+  text-align: center;
+  padding: 24px 20px;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+  transform: scale(0.95);
+  animation: popIn 0.25s forwards;
+}
+
+.modal h3 {
+  font-size: 1.6rem;
+  color: #333;
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+
+.produtoImg {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 16px;
+  margin: 15px 0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.preco {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #ff6600;
+  margin-bottom: 20px;
+}
+
+/* Controles de quantidade */
+.controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 25px;
+}
+
+.controls button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #ff6600;
+  background: white;
+  color: #ff6600;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+}
+
+.controls button:hover {
+  background: #fff0e8;
+}
+
+.controls button:active {
+  background: #ff6600;
+  color: white;
+  transform: scale(0.9);
+  box-shadow: none;
+}
+
+.controls span {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #333;
+}
+
+/* Botões de ação */
+.actions {
+  display: flex;
+  gap: 12px;
+}
+
+.actions button {
+  flex: 1;
+  padding: 12px 0;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+/* Cancelar */
+.actions button:first-child {
+  background: #e0e0e0;
+  color: #333;
+}
+
+.actions button:first-child:hover {
+  background: #cfcfcf;
+}
+
+/* Adicionar */
+.actions button:last-child {
+  background: #ff6600;
+  color: white;
+}
+
+.actions button:last-child:hover {
+  background: #e55c00;
+}
+
+/* Animações */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes popIn {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* Responsivo */
+@media (max-width: 480px) {
+  .modal {
+    padding: 20px 15px;
+  }
+
+  .produtoImg {
+    height: 160px;
+  }
+
+  .controls button {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+
+  .controls span {
+    font-size: 1.2rem;
+  }
+
+  .actions button {
+    padding: 10px 0;
+    font-size: 0.95rem;
+  }
+}

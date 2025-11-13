@@ -1,0 +1,62 @@
+/* Fundo escuro (overlay) */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease;
+  z-index: 99;
+}
+
+.overlay.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Sidebar lateral */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -300px; /* escondido inicialmente */
+  width: 260px;
+  height: 100vh;
+  background: #fff;
+  color: #333;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+  transition: left 0.3s ease;
+  z-index: 100;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.sidebar.open {
+  left: 0; /* mostra com efeito de deslize */
+}
+
+.sidebar h2 {
+  margin-bottom: 10px;
+  color: #ff8a00;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar ul li {
+  margin: 15px 0;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.sidebar ul li:hover {
+  color: #ff8a00;
+}

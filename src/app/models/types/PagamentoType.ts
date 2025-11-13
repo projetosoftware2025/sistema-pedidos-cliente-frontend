@@ -1,0 +1,1 @@
+export type PagamentoType = 'Dinheiro' | 'Cartão de Crédito' | 'Cartão de Débito' | 'Pix' | undefined;
