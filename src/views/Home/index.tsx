@@ -165,6 +165,7 @@ export const HomeView = () => {
 
   useEffect(() => {
     const buscarPedidos = async () => {
+      if(!user.cpf) return
       try {
         const response = await axios.get(
           `https://sistema-pedidos-gestao-api.onrender.com/pedido/buscar-pedidos?dtInicio=${filtro.dataInicial}&dtFim=${filtro.dataFinal}&cpf=${user.cpf}`
