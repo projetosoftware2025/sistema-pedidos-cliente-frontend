@@ -228,9 +228,9 @@ export const DadosPessoais = () => {
             <input
               type="text"
               placeholder="CPF"
-              value={formData.cpf}
+              value={mascaraCPF(formData.cpf)}
               onChange={(e) =>
-                setFormData({ ...formData, cpf: mascaraCPF(e.target.value) })
+                setFormData({ ...formData, cpf: e.target.value })
               }
             />
           </div>
@@ -240,11 +240,11 @@ export const DadosPessoais = () => {
             <input
               type="text"
               placeholder="(11) 99999-9999"
-              value={formData.telefone}
+              value={mascaraTelefone(formData.telefone)}
               onChange={(e) =>
                 setFormData({
                   ...formData,
-                  telefone: mascaraTelefone(e.target.value),
+                  telefone: e.target.value,
                 })
               }
             />
