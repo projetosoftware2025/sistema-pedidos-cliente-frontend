@@ -6,6 +6,10 @@ import { formatarReal } from "../../utils/formatarReal";
 import { PagamentoType } from "../../app/models/types/PagamentoType";
 import { useNavigate } from "react-router-dom";
 import { DadosInterface } from "../../app/models/interfaces/DadosInterface";
+import { useDispatch, useSelector } from "react-redux";
+import { setUser } from "../../redux/reducers/authReducer";
+import { RootState } from "../../redux/store";
+import { UserInterface } from "../../app/models/interfaces/UserInterface";
 
 interface ModalProps {
     isOpen: boolean;
@@ -24,9 +28,14 @@ export const ModalRevisarPedido: React.FC<ModalProps> = ({
     carrinho,
     formaPagamento
 }) => {
+    const dispatch = useDispatch();
+    const user: UserInterface = useSelector(
+        (state: RootState) => state.auth.user
+    );
     if (!isOpen) return null;
 
     const total = carrinho.reduce((sum, item) => sum + item.preco * item.quantidade, 0);
+
 
     return (
         <div className={styles.overlay}>
@@ -65,7 +74,10 @@ export const ModalRevisarPedido: React.FC<ModalProps> = ({
                 <div className={styles.footer}>
                     <button className={styles.cancelButton} onClick={onClose}>Cancelar</button>
                     <button className={styles.confirmButton}
-                        onClick={()=>{onConfirm(carrinho)}}>
+                        onClick={() => {
+                            onConfirm(carrinho)
+                            dispatch(setUser({ ...user, cpf: cliente.cpf }))
+                        }}>
                         Confirmar
                     </button>
                 </div>

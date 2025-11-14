@@ -1,7 +1,15 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChevronDown, ChevronUp, ChevronLeft } from "lucide-react";
 import styles from "./index.module.css";
 import { useNavigate } from "react-router-dom";
+import { HeaderComponent } from "../../components/Header";
+import { SidebarComponent } from "../../components/SidebarComponent";
+import { useDispatch, useSelector } from "react-redux";
+import { setSideBar } from "../../redux/reducers/appReducer";
+import { RootState } from "../../redux/store";
+import { toast } from "react-toastify";
+import axios from "axios";
+import { UserInterface } from "../../app/models/interfaces/UserInterface";
 
 interface Produto {
   nome: string;
@@ -9,61 +17,62 @@ interface Produto {
   valorUnitario: number;
 }
 
-interface Pedido {
+type StatusType = "Andamento" | "Cancelado" | "Finalizado" | "Pronto" | ""
+
+export interface Pedido {
   id: number;
-  descricao: string;
-  data: string;
-  status: "pendente" | "finalizado" | "cancelado" | "aguardando";
-  produtos: Produto[];
+  numero: string;
+  cliente: string;
+  cpf: string;
+  dtPedido: string;
+  dtFInalizacao: string | null;
+  dtCancelamento: string | null;
+  formaPagamento: string;
+  status: string;
+}
+
+export interface FiltroInterface {
+  campo: string;
+  dataInicial: string | null; // formato "YYYY-MM-DD"
+  dataFinal: string | null;
+  status: StatusType;
+}
+
+interface ItensPedidosInterface {
+  id: number,
+  idProduto: number,
+  idPedido: number,
+  titulo: string,
+  valorUnitario: number,
+  quantidade: number
 }
 
 export const MeusPedidos: React.FC = () => {
   const [pedidoAberto, setPedidoAberto] = useState<number | null>(null);
   const [filtroStatus, setFiltroStatus] = useState<string>("");
-  const navigate = useNavigate()
+  const [pedidos, setPedidos] = useState<Pedido[] | null>();
+  const isSidebarOpen = useSelector((state: RootState) => state.app.isSidebarOpen);
+  const [detalhePedido, setDetalhePedido] = useState<ItensPedidosInterface[] | null>(null);
+  const navigate = useNavigate();
+  const user: UserInterface = useSelector(
+    (state: RootState) => state.auth.user
+  );
+  const dispatch = useDispatch()
 
-  const pedidos: Pedido[] = [
-    {
-      id: 14,
-      descricao: "Suco de manga 300ml, Café expresso 160ml, Tapioca com queijo",
-      data: "15/10/2025 às 09:29",
-      status: "aguardando",
-      produtos: [
-        { nome: "Suco de manga 300ml", quantidade: 1, valorUnitario: 6.99 },
-        { nome: "Café expresso 160ml", quantidade: 1, valorUnitario: 5.5 },
-        { nome: "Tapioca com queijo", quantidade: 1, valorUnitario: 8.99 },
-      ],
-    },
-    {
-      id: 15,
-      descricao: "Café com leite 200ml, Pão na chapa",
-      data: "15/10/2025 às 10:15",
-      status: "pendente",
-      produtos: [
-        { nome: "Café com leite 200ml", quantidade: 1, valorUnitario: 4.99 },
-        { nome: "Pão na chapa", quantidade: 2, valorUnitario: 3.5 },
-      ],
-    },
-    {
-      id: 16,
-      descricao: "Suco natural 400ml",
-      data: "15/10/2025 às 11:00",
-      status: "finalizado",
-      produtos: [
-        { nome: "Suco natural 400ml", quantidade: 1, valorUnitario: 7.99 },
-      ],
-    },
-    {
-      id: 17,
-      descricao: "Misto quente, Coca 350ml",
-      data: "15/10/2025 às 12:00",
-      status: "cancelado",
-      produtos: [
-        { nome: "Misto quente", quantidade: 1, valorUnitario: 8.5 },
-        { nome: "Coca 350ml", quantidade: 1, valorUnitario: 6.0 },
-      ],
-    },
-  ];
+  const hoje = new Date();
+  const tresDiasAtras = new Date();
+  tresDiasAtras.setDate(hoje.getDate() - 3);
+
+  // formatar para "YYYY-MM-DD"
+  const formatarData = (data: Date) => data.toISOString().split("T")[0];
+
+  const [filtro, setFiltro] = useState<FiltroInterface>({
+    campo: "",
+    dataInicial: formatarData(tresDiasAtras),
+    dataFinal: formatarData(hoje),
+    status: "",
+  });
+
 
   const getStatusColor = (status: Pedido["status"]) => {
     switch (status) {
@@ -82,6 +91,7 @@ export const MeusPedidos: React.FC = () => {
 
   const togglePedido = (id: number) => {
     setPedidoAberto(pedidoAberto === id ? null : id);
+    buscarDadosPedido(id)
   };
 
   const handleCancelarPedido = (id: number) => {
@@ -91,153 +101,231 @@ export const MeusPedidos: React.FC = () => {
   const pedidosFiltrados =
     filtroStatus === ""
       ? pedidos
-      : pedidos.filter(
+      : pedidos?.filter(
         (p) => p.status.toLowerCase() === filtroStatus.toLowerCase()
       );
 
+  // const buscarPedidos = async () => {
+  //   // setLoading(true);
+  //   // setPedidos(null)
+  //   try {
+  //     const response = await axios.get(`https://sistema-pedidos-gestao-api.onrender.com/pedido/buscar-pedidos?dtInicio=${filtro.dataInicial}&dtFim=${filtro.dataFinal}`)
+  //     if (response.data && response.status == 200) {
+  //       setPedidos(response.data)
+
+  //     } else if (response.status == 404) {
+  //       toast.error("Pedidos não encotrados!")
+  //     } else {
+  //       toast.error("Pedidos não encotrados!")
+  //     }
+
+  //     // setLoading(false);
+  //   } catch (error) {
+  //     toast.error("Pedidos não encotrados!")
+  //     // setLoading(false);
+  //   }
+  // };
+
+  const buscarDadosPedido = async (id: number) => {
+    try {
+      const response = await axios.get(`https://sistema-pedidos-gestao-api.onrender.com/itens-pedido/buscar-itens?idPedido=${id}`)
+      if (response.data && response.status == 200) {
+        setDetalhePedido(response.data)
+      } else if (response.status == 404) {
+        toast.error("Itens não encotrados!")
+      } else {
+        toast.error("Erro ao buscar dados do pedido")
+      }
+    } catch (error) {
+      toast.error(`Erro na requisição: ${error}`)
+    }
+  };
+
+  useEffect(() => {
+    const buscarPedidos = async () => {
+      try {
+        const response = await axios.get(`https://sistema-pedidos-gestao-api.onrender.com/pedido/buscar-pedidos?dtInicio=${filtro.dataInicial}&dtFim=${filtro.dataFinal}&cpf=${user.cpf}`)
+        if (response.data && response.status == 200) {
+          setPedidos(response.data)
+        } else if (response.status == 404) {
+          toast.error("Pedidos não encotrados!")
+        } else {
+          toast.error("Pedidos não encotrados!")
+        }
+      } catch (error) {
+        toast.error("Pedidos não encotrados!")
+      }
+    };
+    buscarPedidos();
+
+  }, [filtro.dataInicial, filtro.dataFinal]);
+
   return (
-    <div className={styles.page}>
-      <div className={styles.header}>
-        <div className={styles.toBack} onClick={() => navigate("/")}>
-          <ChevronLeft size={32} strokeWidth={2} />
-        </div>
-        <span>Meus pedidos</span>
-      </div>
+    <div className={styles.container}>
+      <HeaderComponent device="desktop" />
 
-      <div className={styles.filters}>
-        <div className={styles.filterItem}>
-          <label>Data inicial</label>
-          <input type="date" className={styles.dateInput} />
-        </div>
-        <div className={styles.filterItem}>
-          <label>Data final</label>
-          <input type="date" className={styles.dateInput} />
-        </div>
-        <div className={styles.filterItem}>
-          <label>Status</label>
-          <select
-            className={styles.select}
-            value={filtroStatus}
-            onChange={(e) => setFiltroStatus(e.target.value)}
-          >
-            <option value="">Todos</option>
-            <option value="pendente">Pendente</option>
-            <option value="finalizado">Finalizado</option>
-            <option value="cancelado">Cancelado</option>
-            <option value="aguardando">Aguardando</option>
-          </select>
-        </div>
-      </div>
-
-      <div className={styles.list}>
-        {pedidosFiltrados.length === 0 ? (
-          <p style={{ textAlign: "center", color: "#777" }}>
-            Nenhum pedido encontrado para o status selecionado.
-          </p>
-        ) : (
-          pedidosFiltrados.map((pedido) => (
-            <div
-              key={pedido.id}
-              className={styles.card}
-              onClick={() => togglePedido(pedido.id)}
+      <div className={styles.containerBox}>
+        <SidebarComponent
+          isOpen={isSidebarOpen}
+          onClose={() => dispatch(setSideBar(false))}
+          device={"desktop"}
+        />
+        <div className={styles.filters}>
+          <div className={styles.filterItem}>
+            <label>Data inicial</label>
+            <input type="date" className={styles.dateInput} value={filtro.dataInicial ?? ""} onChange={(e) => setFiltro({ ...filtro, dataInicial: e.target.value })} />
+          </div>
+          <div className={styles.filterItem}>
+            <label>Data final</label>
+            <input type="date" className={styles.dateInput} value={filtro.dataFinal ?? ""} onChange={(e) => setFiltro({ ...filtro, dataFinal: e.target.value })} />
+          </div>
+          <div className={styles.filterItem}>
+            <label>Status</label>
+            <select
+              className={styles.select}
+              value={filtroStatus}
+              onChange={(e) => setFiltroStatus(e.target.value)}
             >
-              <div
-                className={styles.statusBar}
-                style={{ backgroundColor: getStatusColor(pedido.status) }}
-              >
-                #{pedido.id}
-              </div>
+              <option value="">Todos</option>
+              <option value="pendente">Pendente</option>
+              <option value="finalizado">Finalizado</option>
+              <option value="cancelado">Cancelado</option>
+              <option value="aguardando">Aguardando</option>
+            </select>
+          </div>
+        </div>
 
-              <div className={styles.cardContent}>
-                <div className={styles.cardHeader}>
-                  <h3>{pedido.descricao}</h3>
-                  {pedidoAberto === pedido.id ? (
-                    <ChevronUp size={22} />
-                  ) : (
-                    <ChevronDown size={22} />
-                  )}
+        <div className={styles.list}>
+          {pedidosFiltrados?.length === 0 ? (
+            <p style={{ textAlign: "center", color: "#777" }}>
+              Nenhum pedido encontrado para o status selecionado.
+            </p>
+          ) : (
+            pedidosFiltrados?.map((pedido) => (
+              <div
+                key={pedido.id}
+                className={styles.card}
+                onClick={() => togglePedido(pedido.id)}
+
+              >
+                <div
+                  className={styles.statusBar}
+                  style={{
+                    color:
+                      pedido.status === "A"
+                        ? "black"
+                        : "white",
+                    background:
+                      pedido.status === "A"
+                        ? "#F9A825" // amarelo
+                        : pedido.status === "P"
+                          ? "#43A047" // verde
+                          : pedido.status === "R"
+                            ? "#1976D2" // azul
+                            : pedido.status === "F"
+                              ? "#6A1B9A" // roxo
+                              : "#E53935", // vermelho
+                  }}
+                >
+                  #{pedido.id}
                 </div>
 
-                <p className={styles.orderDate}>
-                  Data do pedido: {pedido.data}
-                </p>
-
-                {pedidoAberto === pedido.id && (
-                  <div className={styles.details}>
-                    <p>
-                      Valor total:{" "}
-                      <strong>
-                        R$
-                        {pedido.produtos
-                          .reduce(
-                            (total, p) =>
-                              total + p.quantidade * p.valorUnitario,
-                            0
-                          )
-                          .toFixed(2)
-                          .replace(".", ",")}
-                      </strong>
-                    </p>
-
-                    { /*STATUS ABAIXO DO VALOR TOTAL */}
-                    <p
-                      style={{
-                        fontWeight: "600",
-                        marginTop: "4px",
-                        marginBottom: "10px",
-                      }}
-                    >
-                      Status:{" "}
-                      {pedido.status.charAt(0).toUpperCase() +
-                        pedido.status.slice(1).toLowerCase()}
-                    </p>
-
-                    <table className={styles.table}>
-                      <thead>
-                        <tr>
-                          <th>Produto</th>
-                          <th>Qtd</th>
-                          <th>Valor unit.</th>
-                          <th>Total</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {pedido.produtos.map((p, i) => (
-                          <tr key={i}>
-                            <td>{p.nome}</td>
-                            <td>{p.quantidade}</td>
-                            <td>
-                              R$ {p.valorUnitario.toFixed(2).replace(".", ",")}
-                            </td>
-                            <td>
-                              R${" "}
-                              {(p.quantidade * p.valorUnitario)
-                                .toFixed(2)
-                                .replace(".", ",")}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-
-                    {(pedido.status === "aguardando" ||
-                      pedido.status === "pendente") && (
-                        <button
-                          className={styles.cancelBtn}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleCancelarPedido(pedido.id);
-                          }}
-                        >
-                          Cancelar pedido
-                        </button>
-                      )}
+                <div className={styles.cardContent}>
+                  <div className={styles.cardHeader}>
+                    <h3>{pedido.cliente}</h3>
+                    {pedidoAberto === pedido.id ? (
+                      <ChevronUp size={22} />
+                    ) : (
+                      <ChevronDown size={22} />
+                    )}
                   </div>
-                )}
+
+                  <p className={styles.orderDate}>
+                    Data do pedido: {pedido.dtPedido}
+                  </p>
+
+                  {pedidoAberto === pedido.id && (
+                    <div className={styles.details}>
+                      <p>
+                        Valor total:{" "}
+                        <strong>
+                          R$
+                          {detalhePedido
+                            ?.reduce((acc, item) => acc + item.quantidade * item.valorUnitario, 0)
+                            .toFixed(2)
+                            .replace(".", ",")}
+
+
+                        </strong>
+                      </p>
+                      <p
+                        style={{
+                          fontWeight: "600",
+                          marginTop: "4px",
+                          marginBottom: "10px",
+                        }}
+                      >
+                        Status:{" "}
+                        {pedido.status === "A"
+                          ? "Aguardando Pagamento"
+                          : pedido.status === "P"
+                            ? "Pagamento Aprovado"
+                            : pedido.status === "R"
+                              ? "Pronto"
+                              : pedido.status === "F"
+                                ? "Finalizado"
+                                : "Cancelado"}
+                      </p>
+
+                      <table className={styles.table}>
+                        <thead>
+                          <tr>
+                            <th>ID</th>
+                            <th>Produto</th>
+                            <th>Qtd</th>
+                            <th>Valor unit.</th>
+                            <th>Total</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {detalhePedido?.map((p, i) => (
+                            <tr key={i}>
+                              <td>{p.id}</td>
+                              <td>{p.titulo}</td>
+                              <td>{p.quantidade}</td>
+                              <td>
+                                R$ {p.valorUnitario.toFixed(2).replace(".", ",")}
+                              </td>
+                              <td>
+                                R${" "}
+                                {(p.quantidade * p.valorUnitario)
+                                  .toFixed(2)
+                                  .replace(".", ",")}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+
+                      {/* {(pedido.status === "aguardando" ||
+                        pedido.status === "pendente") && (
+                          <button
+                            className={styles.cancelBtn}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleCancelarPedido(pedido.id);
+                            }}
+                          >
+                            Cancelar pedido
+                          </button>
+                        )} */}
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          ))
-        )}
+            ))
+          )}
+        </div>
       </div>
     </div>
   );

@@ -4,7 +4,9 @@ export const emptyUser: UserInterface = {
   usuario: "",
   email: "",
   logado: false,
-  perfil: ""
+  perfil: "",
+  cpf: "",
+  telefone: ""
 
 };
 

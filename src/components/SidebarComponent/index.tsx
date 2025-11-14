@@ -30,7 +30,7 @@ export const SidebarComponent: React.FC<SidebarProps> = ({ isOpen, onClose, devi
         onClick={(e) => e.stopPropagation()} // impede fechar ao clicar dentro
       >
         <ul>
-          {device === "desktop" ? (
+          
             <>
               <li
                 onClick={() => {
@@ -48,43 +48,9 @@ export const SidebarComponent: React.FC<SidebarProps> = ({ isOpen, onClose, devi
               >
                 Meus pedidos
               </li>
-              <li
-                onClick={() => {
-                  navigate("/gestao-pedidos");
-                  onClose();
-                }}
-              >
-                Gerenciamento de Pedidos
-              </li>
-              <li
-                onClick={() => {
-                  navigate("/gestao-cadastros");
-                  onClose();
-                }}
-              >
-                Produtos & Categorias
-              </li>
-              <li
-                onClick={() => {
-                  navigate("/login");
-                  onClose();
-                }}
-              >
-                Sair
-              </li>
+             
             </>
-          ) : (
-            <>
-              <li
-                onClick={() => {
-                  navigate("/meus-pedidos");
-                  onClose();
-                }}
-              >
-                Meus Pedidos
-              </li>
-            </>
-          )}
+         
         </ul>
       </div>
     </>
